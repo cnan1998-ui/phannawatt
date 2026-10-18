@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บัตรสะสมแต้ม - ร้านพรรณวัฒน์</title>
+    <!-- นำเข้า LINE LIFF SDK และ Tailwind CSS -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-stone-50 min-h-screen text-slate-800 pb-12">
+
+    <!-- Header & Profile Section -->
+    <header class="bg-emerald-700 text-white pt-8 pb-16 px-4 rounded-b-3xl shadow-lg relative">
+        <div class="max-w-md mx-auto text-center">
+            <h1 class="text-2xl font-semibold tracking-wide">ร้านพรรณวัฒน์</h1>
+            <p class="text-emerald-100 text-sm mt-1">ศูนย์รวมชุดเพาะปลูกและอุปกรณ์การเกษตร</p>
+            
+            <div id="profile-container" class="mt-6 flex flex-col items-center justify-center">
+                <img id="user-picture" src="https://via.placeholder.com/80" class="w-20 h-20 rounded-full border-4 border-white/30 shadow-md object-cover bg-emerald-800">
+                <h2 id="user-name" class="mt-2 text-lg font-medium">กำลังโหลดข้อมูล...</h2>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-md mx-auto px-4 -mt-10 space-y-6">
+        
+        <!-- Loyalty Card / Stamps -->
+        <section class="bg-white rounded-2xl p-6 shadow-md border border-emerald-100 text-center">
+            <h3 class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">แต้มสะสมของคุณ</h3>
+            <div class="flex items-center justify-center space-x-2 my-2">
+                <span id="user-points" class="text-5xl font-bold text-emerald-600">0</span>
+                <span class="text-slate-500 font-medium self-end mb-1">แต้ม</span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-100 rounded-full h-3 mt-4 overflow-hidden">
+                <div id="progress-bar" class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" class="text-xs text-slate-500 mt-2">สะสมอีก 3 แต้ม เพื่อแลกรับ เมล็ดผัก 1 ชุด</p>
+        </section>
+
+        <!-- Rewards Section -->
+        <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+            <h3 class="text-base font-semibold text-slate-800 mb-3 flex items-center">
+                <span class="mr-2">🎁</span> รายการของรางวัล (ของแถมคุ้มทุน)
+            </h3>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                    <div>
+                        <p class="font-medium text-emerald-900 text-sm">ฟรี! เมล็ดผัก 1 ชุด</p>
+                        <p class="text-xs text-slate-500">เลือกรับเมล็ดผักสวนครัวชนิดใดก็ได้</p>
+                    </div>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-lg">3 แต้ม</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                    <div>
+                        <p class="font-medium text-emerald-900 text-sm">ฟรี! ดินปลูก 1 ถุง</p>
+                        <p class="text-xs text-slate-500">สูตรเพิ่มสารอาหารพร้อมปลูก</p>
+                    </div>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-lg">6 แต้ม</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                    <div>
+                        <p class="font-medium text-emerald-900 text-sm">ฟรี! เมล็ดผัก 3 ชุด</p>
+                        <p class="text-xs text-slate-500">ชุดสุดคุ้ม เลือกได้ตามใจชอบ</p>
+                    </div>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-lg">12 แต้ม</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section (10 Sets) -->
+        <section>
+            <h3 class="text-base font-semibold text-slate-800 mb-3 flex items-center">
+                <span class="mr-2">🌱</span> ชุดเพาะปลูกแนะนำ (10 เซ็ท)
+            </h3>
+            <div id="product-grid" class="grid grid-cols-2 gap-3">
+                <!-- Javascript will insert 10 products here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Script สำหรับเชื่อมต่อ LINE LIFF และแสดงข้อมูลสินค้า -->
+    <script>
+        const LIFF_ID = "YOUR_LIFF_ID_HERE"; // แทนที่ด้วย LIFF ID ของคุณหลังจากสร้างใน LINE Developers
+
+        const products = [
+            { id: 1, name: "ชุดมือใหม่ รับทรัพย์", price: "69.-", desc: "เหมาะสำหรับผู้เริ่มต้น" },
+            { id: 2, name: "ชุดผักคอนโดปั้นเงิน", price: "59.-", desc: "ปลูกง่ายในพื้นที่จำกัด" },
+            { id: 3, name: "ชุดไม้เลื้อยเงินดก", price: "79.-", desc: "พันธุ์ไม้เลื้อยผลผลิตสูง" },
+            { id: 4, name: "ชุดผักเงินด่วน", price: "59.-", desc: "โตไว เก็บเกี่ยวได้เร็ว" },
+            { id: 5, name: "ชุดผักสองเดือนรับทรัพย์", price: "99.-", desc: "ระยะเวลาเก็บเกี่ยว 2 เดือน" },
+            { id: 6, name: "ชุดผักสามเดือนเงินยั่งยืน", price: "99.-", desc: "ผลผลิตยาวนาน คุ้มค่า" },
+            { id: 7, name: "ชุดทุนน้อย กำไรยาว", price: "99.-", desc: "งบประหยัด ผลตอบแทนดี" },
+            { id: 8, name: "ชุดเก็บผลรับทรัพย์", price: "99.-", desc: "เน้นเก็บกินผลผลิตต่อเนื่อง" },
+            { id: 9, name: "ชุดผักใบกำไรงาม", price: "99.-", desc: "ผักใบเขียวสดกรอบ" },
+            { id: 10, name: "ชุดเพาะกล้าพร้อมปลูก", price: "179.-", desc: "ชุดใหญ่จัดเต็มพร้อมปลูก" }
+        ];
+
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.map(p => `
+                <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="w-full h-20 bg-emerald-100/60 rounded-lg flex items-center justify-center text-emerald-700 text-xl mb-2">🌿</div>
+                        <h4 class="font-medium text-xs text-slate-800 line-clamp-1">${p.name}</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5 line-clamp-2">${p.desc}</p>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-emerald-700">${p.price}</span>
+                        <span class="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded font-medium">+1 แต้ม</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateLoyaltyDisplay(points) {
+            document.getElementById('user-points').innerText = points;
+            
+            let targetPoints = 3;
+            let rewardText = "เมล็ดผัก 1 ชุด";
+            let progress = (points / 12) * 100;
+            if (points < 3) {
+                targetPoints = 3;
+                rewardText = "เมล็ดผัก 1 ชุด";
+            } else if (points < 6) {
+                targetPoints = 6;
+                rewardText = "ดินปลูก 1 ถุง";
+            } else if (points < 12) {
+                targetPoints = 12;
+                rewardText = "เมล็ดผัก 3 ชุด";
+            } else {
+                targetPoints = 12;
+                rewardText = "ครบระดับสูงสุดแล้ว!";
+            }
+            document.getElementById('progress-bar').style.width = `${Math.min(progress, 100)}%`;
+            if (points < 12) {
+                document.getElementById('progress-text').innerText = `สะสมอีก ${targetPoints - points} แต้ม เพื่อแลกรับ ${rewardText}`;
+            } else {
+                document.getElementById('progress-text').innerText = `คุณสะสมแต้มครบตามเงื่อนไขสูงสุดแล้ว!`;
+            }
+        }
+
+        async function main() {
+            renderProducts();
+            try {
+                await liff.init({ liffId: LIFF_ID });
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    document.getElementById('user-name').innerText = profile.displayName;
+                    document.getElementById('user-picture').src = profile.pictureUrl;
+                    
+                    // ตัวอย่างแต้มสะสม (สามารถเชื่อมโยงระบบฐานข้อมูลหรือระบบหลังบ้านเพิ่มเติมได้ทีหลัง)
+                    const userPoints = 2; 
+                    updateLoyaltyDisplay(userPoints);
+                } else {
+                    liff.login();
+                }
+            } catch (err) {
+                console.error("LIFF Initialization failed", err);
+                document.getElementById('user-name').innerText = "ลูกค้าพรรณวัฒน์";
+                updateLoyaltyDisplay(0);
+            }
+        }
+        main();
+    </script>
+</body>
+</html>
